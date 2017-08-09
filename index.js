@@ -5,9 +5,44 @@ const cheerio = require("cheerio");
 request("http://nflpickwatch.com/?text=1", function (err, body) {
 
   let $ = cheerio.load(body);
+  let ignoredValuesArr = ['CONSENSUS', 'WEEK', 'SEASON'];   // ignore these strings in response
   let winnersArr = [];
   let homeArr = [];
-  let ignoredValuesArr = ['CONSENSUS', 'WEEK', 'SEASON'];   // ignore these strings in response
+  let finalScore = 42;
+  let pointsPerGame = {
+  	ATL: 59.2,
+		NO: 57.7,
+		NE: 43.2,
+		GB: 51.3,
+		DAL: 45.4,
+		AZ: 48.7,
+		IND: 50.2,
+		LAC: 52,
+		OAK: 50.1,
+		BUF: 48.5,
+		WAS: 48.7,
+		PIT: 45.3,
+		KC: 43.7,
+		TEN: 47.4,
+		CAR: 48.2,
+		PHI: 45.6,
+		SEA: 40.4,
+		TB: 45.2,
+		MIA: 46.5,
+		BAL: 41.5,
+		DEN: 39.4,
+		DET: 44,
+		MIN: 39.6,
+		CIN: 40,
+		JAX: 44.9,
+		SF: 49.3,
+		NYG: 37.2,
+		HOU: 37.9,
+		CHI: 42.3,
+		NYJ: 42.8,
+		CLE: 44.8,
+		LAR: 38.6
+  }
 
   let findHomeTeams = () => {
     for(i = 0; i < $('thead tr').first().children().length; i++){
@@ -38,9 +73,19 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
     }
   }
 
+  let findFinalScore = () => {
+		let game = $('thead tr').first().children().eq(-2).text();
+		let lastGameArr = game.split('@');
+		let lastAway = lastGameArr[0];
+		let lastHome = lastGameArr[1];
+		finalScore = Math.round((pointsPerGame[lastAway] + pointsPerGame[lastHome]) / 2);
+  }
+
   findHomeTeams();
   findWinners();
-  console.log('home:    ' + homeArr)
-  console.log('winners: ' + winnersArr)
+  findFinalScore();
+  console.log('home:    ' + homeArr);
+  console.log('winners: ' + winnersArr);
+  console.log('final game score: ' + finalScore)
 });
 
