@@ -7,6 +7,7 @@ const mail    = require('nodemailer');
 let winnersArr = [];
 let homeArr = [];
 let finalScore = 42;
+let week = '';
 
 
 request("http://nflpickwatch.com/?text=1", function (err, body) {
@@ -70,9 +71,9 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
       if(!ignoredValuesArr.includes(winner)){   // check for ignored values
 
         if(winner === ''){
-          winnersArr.push(homeArr[i - 1])
+          winnersArr.push('<br />' + homeArr[i - 1])
         } else {
-          winnersArr.push(winner)
+          winnersArr.push('<br />' + winner)
         }
       }
     }
@@ -86,18 +87,19 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
 		finalScore = Math.round((pointsPerGame[lastAway] + pointsPerGame[lastHome]) / 2);
   }
 
+  let findWeek = () => {
+    week = $('h2').eq(2).text();
+  }
+
   findHomeTeams();
   findWinners();
   findFinalScore();
+  findWeek();
 })
 .then(function(){
-  // console.log('home:    ' + homeArr);
-  // console.log('winners: ' + winnersArr);
-  // console.log('final game score: ' + finalScore)
-  // console.log('env test: ' + process.env.TEST)
   // SEND EMAIL
   let transporter = mail.createTransport({
-    host: 'box1312.bluehost.com',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true, // secure:true for port 465, secure:false for port 587
     auth: {
@@ -109,9 +111,8 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
 	let mailOptions = {
     from: 'nflpicks@mvpowers.net', // sender address
     to: 'michaelvincentpowers@gmail.com', // list of receivers
-    subject: 'Hello New Test', // Subject line
-    text: 'Hello world', // plain text body
-    html: 'Hello world' // html body
+    subject: "🏈🔥💯 Mikey\'s NFL Picks - " + week + " 💯🔥🏈", // Subject line
+    html: winnersArr + '<br /><br />' + 'Final Score: ' + finalScore // html body
 	};
 
 	transporter.sendMail(mailOptions, (error, info) => {
@@ -120,18 +121,7 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
     }
     console.log('Message %s sent: %s', info.messageId, info.response);
 	});
-
 })
-
-
-
-
-
-
-
-
-
-// catch error
-// .catch(err => {
-//     console.log(err);
-// });
+.catch(err => {
+    console.log(err);
+});
