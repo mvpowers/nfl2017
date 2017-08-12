@@ -1,14 +1,19 @@
+require('dotenv').config()
+
 const request = require("tinyreq");
 const cheerio = require("cheerio");
+const mail    = require('nodemailer'); 
+
+let winnersArr = [];
+let homeArr = [];
+let finalScore = 42;
 
 
 request("http://nflpickwatch.com/?text=1", function (err, body) {
 
   let $ = cheerio.load(body);
   let ignoredValuesArr = ['CONSENSUS', 'WEEK', 'SEASON'];   // ignore these strings in response
-  let winnersArr = [];
-  let homeArr = [];
-  let finalScore = 42;
+
   let pointsPerGame = {
   	ATL: 59.2,
 		NO: 57.7,
@@ -84,8 +89,49 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
   findHomeTeams();
   findWinners();
   findFinalScore();
-  console.log('home:    ' + homeArr);
-  console.log('winners: ' + winnersArr);
-  console.log('final game score: ' + finalScore)
-});
+})
+.then(function(){
+  // console.log('home:    ' + homeArr);
+  // console.log('winners: ' + winnersArr);
+  // console.log('final game score: ' + finalScore)
+  // console.log('env test: ' + process.env.TEST)
+  // SEND EMAIL
+  let transporter = mail.createTransport({
+    host: 'box1312.bluehost.com',
+    port: 465,
+    secure: true, // secure:true for port 465, secure:false for port 587
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+	});
 
+	let mailOptions = {
+    from: 'nflpicks@mvpowers.net', // sender address
+    to: 'michaelvincentpowers@gmail.com', // list of receivers
+    subject: 'Hello New Test', // Subject line
+    text: 'Hello world', // plain text body
+    html: 'Hello world' // html body
+	};
+
+	transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+        return console.log(error);
+    }
+    console.log('Message %s sent: %s', info.messageId, info.response);
+	});
+
+})
+
+
+
+
+
+
+
+
+
+// catch error
+// .catch(err => {
+//     console.log(err);
+// });

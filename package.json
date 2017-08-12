@@ -18,6 +18,8 @@
   "homepage": "https://github.com/mvpowers/nfl2017#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "tinyreq": "^3.2.2"
+    "dotenv": "^4.0.0",
+    "nodemailer": "^4.0.1",
+    "tinyreq": "^3.2.5"
   }
 }
