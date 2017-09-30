@@ -62,7 +62,7 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
 
 
   let findWinners = () => {
-    for(i = 0; i < $('.consensus').children().length; i++){
+    for(i = 0; i < ($('.consensus').children().length; i++ - 1)){
       let winner = $('.consensus').children().eq(i).text();
 
       winner = winner.match(/[a-zA-Z]*/);       // remove numbers and symbols
@@ -110,7 +110,7 @@ request("http://nflpickwatch.com/?text=1", function (err, body) {
 
 	let mailOptions = {
     from: 'nflpicks@mvpowers.net', // sender address
-    to: 'michaelvincentpowers@gmail.com', // list of receivers
+    to: 'test@mvpowers.net', // list of receivers
     subject: "🏈🔥💯 Mikey\'s NFL Picks - " + week + " 💯🔥🏈", // Subject line
     html: winnersArr + '<br /><br />' + 'Final Score: ' + finalScore // html body
 	};
